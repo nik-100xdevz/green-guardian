@@ -34,9 +34,10 @@ class Contribution(db.Model):
 
 class Pickup(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), nullable=False)
     pickup_date = db.Column(db.Date, nullable=False)
-    pickup_number = db.Column(db.String, nullable=False)
-    pickup_location = db.Column(db.String, nullable=False)
+    pickup_number = db.Column(db.Integer, nullable=False)
+    pickup_location = db.Column(db.String(200), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
@@ -147,7 +148,7 @@ def pickup():
 
         user = User.query.filter_by(username=session.get('username')).first()
         print(pickup_date)
-        new_pickup = Pickup(user_id=user.id, pickup_date=pickup_date, pickup_number=pickup_number,pickup_location=pickup_location )
+        new_pickup = Pickup(user_id=user.id,username= username ,pickup_date=pickup_date, pickup_number=pickup_number,pickup_location=pickup_location )
         db.session.add(new_pickup)
         db.session.commit()
         flash("Pickup scheduled successfully!", "success")
