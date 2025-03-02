@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+
+
+from datetime import datetime
 import os
 
 app = Flask(__name__)
@@ -68,6 +71,9 @@ def pickup():
     if request.method == 'POST':
         username = request.form.get('username')
         pickup_date = request.form.get('pickup_date')
+        pickup_date = datetime.strptime(pickup_date, '%Y-%m-%d').date()
+        print(type(pickup_date))
+        print(pickup_date)  # printed in default format
         
         if not username or not pickup_date:
             flash("Username and Pickup Date are required.", "danger")
