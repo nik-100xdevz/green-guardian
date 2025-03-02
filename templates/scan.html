@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-4">
+    <div class="header text-center mb-4">
+        <h1>Green Guardian</h1>
+        <p>Plastic Scanning with AI &amp; Reuse Suggestions</p>
+    </div>
+
+    <!-- Upload area -->
+    <div class="upload-area border border-success rounded p-4 text-center"
+        onclick="document.getElementById('fileInput').click()">
+        <input type="file" id="fileInput" accept="image/*" hidden>
+        <div class="upload-content">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+            </svg>
+            <h3 class="mt-2">Drag & Drop or Click to Upload</h3>
+            <p>Supported formats: JPEG, PNG, WEBP</p>
+            <small>Implemented by Nikhil Rai</small>
+        </div>
+    </div>
+
+    <!-- Image preview -->
+    <div class="preview-container mt-4" style="display:none;">
+        <img id="preview" class="img-fluid rounded" alt="Waste Preview">
+    </div>
+
+    <!-- Results panel -->
+    <div class="results-panel mt-4">
+        <div id="predictions"></div>
+        <div class="stats-bar d-flex justify-content-around mt-3">
+            <div class="stat-box p-3 bg-light rounded">
+                <h4>Total Detections</h4>
+                <p id="totalDetections">0</p>
+            </div>
+            <div class="stat-box p-3 bg-light rounded">
+                <h4>Average Confidence</h4>
+                <p id="averageConfidence">0%</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay"
+        style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); align-items:center; justify-content:center;">
+        <div class="spinner-border text-success" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- Configuration for AI scanning ---
+    const API_KEY = "ZXkszgdUoB1NitZltKSP"; // (Secure in production)
+    const MODEL_ENDPOINT = "https://detect.roboflow.com/waste-classification-uwqfy/1";
+
+    // Categories and reuse suggestions mapping
+    const wasteCategories = {
+        'plastic': { name: 'Plastic', class: 'recyclable', icon: '♻️', recyclable: true, suggestion: 'Reuse as a planter or storage container.' },
+        'paper': { name: 'Paper', class: 'recyclable', icon: '📄', recyclable: true, suggestion: 'Recycle to create crafts.' },
+        'glass': { name: 'Glass', class: 'recyclable', icon: '🍶', recyclable: true, suggestion: 'Reuse as decorative items.' },
+        'metal': { name: 'Metal', class: 'recyclable', icon: '🔩', recyclable: true, suggestion: 'Recycle or repurpose for art projects.' },
+        // Add more mappings as needed
+    };
+
+    async function processImage(file) {
+        const loader = document.querySelector('.loading-overlay');
+        const previewContainer = document.querySelector('.preview-container');
+        const predictionsDiv = document.getElementById('predictions');
+
+        try {
+            loader.style.display = 'flex';
+            previewContainer.style.display = 'none';
+            predictionsDiv.innerHTML = '';
+
+            // Show preview
+            const preview = document.getElementById('preview');
+            preview.src = URL.createObjectURL(file);
+            previewContainer.style.display = 'block';
+
+            // Convert image to base64
+            const base64 = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = error => reject(error);
+            });
+
+            // API call to external model
+            const response = await axios.post(MODEL_ENDPOINT, base64, {
+                params: { api_key: API_KEY },
+                headers: { "Content-Type": "application/x-www-form-urlencoded" }
+            });
+
+            const predictions = response.data.predictions;
+            if (!predictions.length) throw new Error('No waste detected');
+
+            updateResults(predictions);
+            updateStatistics(predictions);
+
+            // Record contribution via backend API call
+            const username = prompt("Enter your username to record your contribution:");
+            if (username) {
+                await axios.post("/api/record_scan", { username });
+            }
+
+        } catch (error) {
+            showError(error.response ? error.response.data.error || error.message : error.message);
+        } finally {
+            loader.style.display = 'none';
+        }
+    }
+
+    function updateResults(predictions) {
+        const predictionsDiv = document.getElementById('predictions');
+        predictionsDiv.innerHTML = predictions
+            .sort((a, b) => b.confidence - a.confidence)
+            .map(pred => {
+                const catKey = pred.class.toLowerCase();
+                const category = wasteCategories[catKey] || { name: pred.class, class: 'other', icon: '🗑️', recyclable: false, suggestion: 'No suggestion available.' };
+                return `
+                    <div class="prediction-card p-3 border rounded mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="category-tag ${category.class}">${category.icon} ${category.name}</div>
+                            <div class="ms-auto">
+                                <span>${Math.round(pred.confidence * 100)}%</span>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <strong>Suggestion:</strong> ${category.suggestion}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+    }
+
+    function updateStatistics(predictions) {
+        const totalDetections = predictions.length;
+        const averageConfidence = totalDetections > 0 ? (predictions.reduce((sum, pred) => sum + pred.confidence, 0) / totalDetections) * 100 : 0;
+        document.getElementById('totalDetections').textContent = totalDetections;
+        document.getElementById('averageConfidence').textContent = `${Math.round(averageConfidence)}%`;
+    }
+
+    function showError(message) {
+        const predictionsDiv = document.getElementById('predictions');
+        predictionsDiv.innerHTML = `<div class="alert alert-danger">${message}</div>`;
+    }
+
+    document.getElementById('fileInput').addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            processImage(e.target.files[0]);
+        }
+    });
+
+    const uploadArea = document.querySelector('.upload-area');
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('active');
+    });
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('active');
+    });
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('active');
+        if (e.dataTransfer.files.length > 0) {
+            processImage(e.dataTransfer.files[0]);
+        }
+    });
+</script>
+{% endblock %}

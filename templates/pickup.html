@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-4">
+  <h2 class="mb-4 text-center">Schedule a Pickup</h2>
+  <form method="POST" action="{{ url_for('pickup') }}">
+    <div class="mb-3">
+      <label for="username" class="form-label">Your Name</label>
+      <input type="text" class="form-control" id="username" name="username" placeholder="Enter your name" required>
+    </div>
+    <div class="mb-3">
+      <label for="pickup_date" class="form-label">Pickup Date</label>
+      <input type="date" class="form-control" id="pickup_date" name="pickup_date" required>
+    </div>
+    <button type="submit" class="btn btn-success">Schedule Pickup</button>
+  </form>
+</div>
+{% endblock %}
