@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-4">
+  <h2 class="mb-4 text-center">Sign in</h2>
+  <form method="POST" action="{{ url_for('signin') }}">
+    <div class="mb-3">
+      <label for="username" class="form-label">Your Name</label>
+      <input type="text" class="form-control" id="username" name="username" placeholder="Enter your name" required>
+    </div>
+    <div class="mb-3">
+      <label for="password" class="form-label">Password</label>
+      <input type="text" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+    </div>
+    <button type="submit" class="btn btn-success">Sign in</button>
+    <div class="mb-3">
+     <div>New user <a href="/signup">Sign up</a></div>
+    </div>
+  </form>
+</div>
+{% endblock %}

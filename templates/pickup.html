@@ -11,6 +11,15 @@
       <label for="pickup_date" class="form-label">Pickup Date</label>
       <input type="date" class="form-control" id="pickup_date" name="pickup_date" required>
     </div>
+    <div class="mb-3">
+      <label for="pickup_location" class="form-label">Enter Pickup address</label>
+      <input type="text" class="form-control" id="pickup_location" name="pickup_location" placeholder="Enter you location" required>
+    </div>
+    <div class="mb-3">
+      <label for="pickup_number" class="form-label">Enter Contact number</label>
+      <input type="tel" pattern="[0-9]{10}" class="form-control" id="pickup_number" name="pickup_number" placeholder="Enter you mobile number" required>
+    </div>
+
     <button type="submit" class="btn btn-success">Schedule Pickup</button>
   </form>
 </div>

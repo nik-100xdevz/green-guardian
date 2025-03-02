@@ -22,6 +22,11 @@
           <li class="nav-item"><a class="nav-link" href="{{ url_for('scan') }}">Scan Plastic</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('pickup') }}">Schedule Pickup</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('leaderboard') }}">Leaderboard</a></li>
+          {% if user %}
+          <li class="nav-item"><a class="nav-link"  href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a></li>
+      {% else %}
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('signin') }}" class="btn btn-success">Sign in</a>
+      {% endif %}
         </ul>
       </div>
     </div>
