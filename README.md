@@ -14,7 +14,7 @@ Green Guardian is an AI-powered web application built with Flask that allows use
 
 1. **Clone the repository:**
    ```bash
-   git clone https://your-repo-url.git
+   git clone[ https://your-repo-url.git](https://github.com/nik-100xdevz/green-guardian.git)
    cd green_guardian
 Below is an example **README.md** file that explains the project, its features, setup instructions, and usage details.
 
@@ -63,7 +63,7 @@ Green Guardian is a smart waste sorting web application built with Flask. It all
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YourUsername/green_guardian.git
+git clone(https://github.com/nik-100xdevz/green-guardian.git)
 cd green_guardian
 ```
 
@@ -180,7 +180,7 @@ This project is licensed under the MIT License.
 
 ## Acknowledgments
 
-- Developed by [Your Name].
+- Developed by [Nikhil rai & Nikhil Dubey].
 - Inspired by sustainable waste management initiatives.
 
 ```
