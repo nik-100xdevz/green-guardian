@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify, f
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from datetime import datetime
-
+import random
 
 from datetime import datetime
 
@@ -114,17 +114,14 @@ def scan():
 # API endpoint to record a scan (contribution)
 @app.route('/api/record_scan', methods=['POST'])
 def record_scan():
-    data = request.get_json()
-    username = data.get('username')
-    if not username:
-        return jsonify({"error": "Username is required"}), 400
+    
+    if not session.get("username"):
+        return jsonify({"message": "you are not logged in"})
+    
 
-    user = User.query.filter_by(username=username).first()
-    if not user:
-        user = User(username=username, points=10)
-        db.session.add(user)
-    else:
-        user.points += 10  # Award 10 points per scan
+    user = User.query.filter_by(username=session.get("username")).first()
+
+    user.points += random.randint(10, 100)  # Award 10 points per scan
 
     contribution = Contribution(user=user)
     db.session.add(contribution)

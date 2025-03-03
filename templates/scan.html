@@ -99,10 +99,10 @@
             updateStatistics(predictions);
 
             // Record contribution via backend API call
-            const username = prompt("Enter your username to record your contribution:");
-            if (username) {
-                await axios.post("/api/record_scan", { username });
-            }
+            
+            
+                await axios.post("/api/record_scan");
+            
 
         } catch (error) {
             showError(error.response ? error.response.data.error || error.message : error.message);

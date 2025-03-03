@@ -1,8 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="text-center">
-  <h1>Welcome to Green Guardian</h1>
-  <p class="lead">Scan your plastic waste, earn rewards, schedule pickups, and track your contributions!</p>
-  <a href="{{ url_for('scan') }}" class="btn btn-success btn-lg mt-3">Get Started</a>
+<div class="container d-flex justify-content-center align-items-center vh-100">
+  <div class="card shadow-lg p-4 text-center" style="max-width: 500px;">
+    <div class="card-body">
+      <h1 class="fw-bold text-success">🌱 Green Guardian</h1>
+      <p class="lead text-muted">
+        Scan plastic waste, earn rewards, schedule pickups, and track your impact!
+      </p>
+      <a href="{{ url_for('scan') }}" class="btn btn-lg btn-success mt-3 shadow-sm">
+        🚀 Get Started
+      </a>
+    </div>
+  </div>
 </div>
 {% endblock %}
