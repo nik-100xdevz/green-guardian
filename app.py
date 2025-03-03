@@ -161,5 +161,11 @@ def leaderboard():
     top_users = User.query.order_by(User.points.desc()).limit(10).all()
     return render_template('leaderboard.html', users=top_users)
 
+@app.route('/pickup-details')
+def pickupDetails():
+    # Get top 10 users by points
+    top_pickup = Pickup.query.all()
+    return render_template('pickup_info.html', pickups= top_pickup)
+
 if __name__ == '__main__':
     app.run(debug=True)

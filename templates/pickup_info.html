@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-4">
+  <h2 class="mb-4 text-center">Pick-up_Details</h2>
+  <table class="table table-bordered table-striped">
+    <thead class="table-success">
+      <tr>
+        <th>id</th>
+        <th>Username</th>
+        <th>Date</th>
+        <th>Address</th>
+        <th>Phone-no.</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for pickup in pickups %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ pickup.username }}</td>
+        <td>{{ pickup.pickup_date }}</td>
+        <td>{{ pickup.pickup_location }}</td>
+        <td>{{ pickup.pickup_number }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
